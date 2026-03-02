@@ -653,17 +653,25 @@ function confirmAdd() {
   if (!data[dk]) data[dk] = [];
   const addonLabels = modalAddons.map(k => ADDONS[k].label);
   const displayName = modalFood.name + (addonLabels.length ? ' (' + addonLabels.join(', ') + ')' : '');
-  data[dk].push({
-    id: modalFood.id,
-    name: displayName,
-    qty: modalQty,
-    serving: modalFood.serving,
-    addons: [...modalAddons],
-    cal:  Math.round((modalFood.cal  + extras.cal)  * modalQty),
-    pro:  Math.round((modalFood.pro  + extras.pro)  * modalQty),
-    fat:  Math.round((modalFood.fat  + extras.fat)  * modalQty),
-    carb: Math.round((modalFood.carb + extras.carb) * modalQty),
-  });
+  const addedCal  = Math.round((modalFood.cal  + extras.cal)  * modalQty);
+  const addedPro  = Math.round((modalFood.pro  + extras.pro)  * modalQty);
+  const addedFat  = Math.round((modalFood.fat  + extras.fat)  * modalQty);
+  const addedCarb = Math.round((modalFood.carb + extras.carb) * modalQty);
+  // Merge if same food + same addons already logged
+  const sortedAddons = [...modalAddons].sort().join(',');
+  const existing = data[dk].find(f => f.id === modalFood.id && (f.addons||[]).sort().join(',') === sortedAddons);
+  if (existing) {
+    existing.qty  = Math.round((existing.qty + modalQty) * 10) / 10;
+    existing.cal += addedCal;
+    existing.pro += addedPro;
+    existing.fat += addedFat;
+    existing.carb+= addedCarb;
+  } else {
+    data[dk].push({
+      id: modalFood.id, name: displayName, qty: modalQty, serving: modalFood.serving,
+      addons: [...modalAddons], cal: addedCal, pro: addedPro, fat: addedFat, carb: addedCarb,
+    });
+  }
   setData('nutrition', data);
   closeModal();
   renderNutrition();
@@ -965,7 +973,14 @@ function addCustomFood() {
   if (!name) return;
   const dk = dateKey(), data = getData('nutrition');
   if (!data[dk]) data[dk] = [];
-  data[dk].push({ id:'custom', name, qty:1, serving:'custom', cal, pro, fat:0, carb:0 });
+  const existingCustom = data[dk].find(f => f.id==='custom' && f.name===name);
+  if (existingCustom) {
+    existingCustom.qty += 1;
+    existingCustom.cal += cal;
+    existingCustom.pro += pro;
+  } else {
+    data[dk].push({ id:'custom', name, qty:1, serving:'custom', cal, pro, fat:0, carb:0 });
+  }
   setData('nutrition', data);
   document.getElementById('c-name').value='';
   document.getElementById('c-cal').value='';
