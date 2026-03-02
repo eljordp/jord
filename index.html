@@ -678,26 +678,32 @@ function confirmAdd() {
 }
 
 // ===== WORKOUT DATA =====
-const AM_WORKOUT = [
-  { name:'Cat-Cow', detail:'10 reps' },
-  { name:"World's Greatest Stretch", detail:'5 each side' },
-  { name:'Hip Circles', detail:'10 each direction' },
-  { name:'Shoulder Pass-Throughs', detail:'10 reps' },
-  { name:'Deep Squat Hold', detail:'60 sec' },
-  { name:'Thoracic Rotations', detail:'8 each side' },
-  { name:'Leg Swings', detail:'10 each' },
-  { name:'Left Side Plank', detail:'3 x 30 sec' },
-  { name:'Right Side Stretch', detail:'30 sec x 3' },
-  { name:'Dead Hang', detail:'2 x 30 sec' },
-  { name:'Wall Angels', detail:'10 reps' },
-  { name:'Chin Tucks', detail:'15 reps' },
-  { name:'Band Pull-Aparts', detail:'15 reps' },
-  { name:'Single Leg Stand', detail:'30 sec each' },
-  { name:'Single Leg Deadlift', detail:'8 each side' },
-  { name:'Crow Pose', detail:'3 x 10-20 sec' },
-  { name:'Hollow Body Hold', detail:'3 x 20 sec' },
-  { name:'Single Leg Calf Raise', detail:'10 each side' },
-];
+const AM_ROUTINES = {
+  a: { title:'After Walk (15 Min)', exercises:[
+    {name:'Cat-Cow',detail:'8 reps'},{name:"World's Greatest Stretch",detail:'5 each side'},
+    {name:'Shoulder Pass-Throughs',detail:'10 reps'},{name:'Deep Squat Hold',detail:'30 sec'},
+    {name:'Dead Hang',detail:'2 x 30 sec'},{name:'Wall Angels',detail:'10 reps'},
+    {name:'Left Side Plank',detail:'2 x 30 sec'},{name:'Chin Tucks',detail:'10 reps'},
+  ]},
+  b: { title:'No Walk Day (20 Min)', exercises:[
+    {name:'Jumping Jacks',detail:'45 sec'},{name:'High Knees',detail:'30 sec'},
+    {name:'Arm Circles (fwd + back)',detail:'10 each'},{name:'Leg Swings (front + side)',detail:'10 each'},
+    {name:'Bodyweight Squats',detail:'15 reps'},{name:'Inchworms',detail:'8 reps'},
+    {name:'Mountain Climbers',detail:'30 sec'},{name:'Hollow Body Hold',detail:'3 x 20 sec'},
+    {name:'Single Leg Deadlift',detail:'8 each side'},{name:'Broad Jumps',detail:'5 reps'},
+    {name:'Left Side Plank',detail:'2 x 30 sec'},
+  ]},
+  c: { title:'Yoga & Posture (25 Min)', exercises:[
+    {name:'Cat-Cow',detail:'10 reps'},{name:"Child's Pose",detail:'45 sec'},
+    {name:'Downward Dog',detail:'45 sec'},{name:"World's Greatest Stretch",detail:'5 each side'},
+    {name:'Pigeon Pose',detail:'45 sec each side'},{name:'Seated Forward Fold',detail:'45 sec'},
+    {name:'Thoracic Rotations',detail:'8 each side'},{name:'Hip Circles',detail:'10 each direction'},
+    {name:'Shoulder Pass-Throughs',detail:'10 reps'},{name:'Wall Angels',detail:'10 reps'},
+    {name:'Dead Hang',detail:'2 x 30 sec'},{name:'Left Side Plank',detail:'2 x 30 sec'},
+    {name:'Chin Tucks',detail:'10 reps'},{name:'Supine Twist',detail:'30 sec each side'},
+    {name:'Corpse Pose (Savasana)',detail:'60 sec'},
+  ]},
+};
 
 const PM_HOME = {
   monday:{title:'Push (Chest, Shoulders, Triceps)',exercises:[
@@ -713,7 +719,7 @@ const PM_HOME = {
   wednesday:{title:'Legs & Core',exercises:[
     {name:'DB Goblet Squats',detail:'4 x 12'},{name:'EZ Bar Romanian Deadlifts',detail:'4 x 10'},
     {name:'DB Bulgarian Split Squats',detail:'3 x 10 each'},{name:'DB Calf Raises',detail:'4 x 20'},
-    {name:'Leg Raises',detail:'3 x 15'},{name:'Plank',detail:'3 x 60 sec'},
+    {name:'Hanging/Lying Leg Raises',detail:'3 x 15'},{name:'Plank',detail:'3 x 60 sec'},
   ]},
   thursday:{title:'Full Upper Body',exercises:[
     {name:'EZ Bar Overhead Press',detail:'4 x 10'},{name:'EZ Bar Bent-Over Rows',detail:'4 x 10'},
@@ -744,12 +750,44 @@ const PM_GYM = {
     {name:'Leg Curls',detail:'3 x 12'},{name:'Calf Raises',detail:'4 x 15'},
     {name:'Hanging Leg Raises',detail:'3 x 12'},
   ]},
-  thursday:{title:'Full Upper — Gym',exercises:[
-    {name:'Barbell Bench Press',detail:'3 x 8'},{name:'Barbell Rows',detail:'3 x 8'},
-    {name:'Overhead Press',detail:'3 x 8'},{name:'Barbell Curls',detail:'2 x 10'},
-    {name:'Face Pulls',detail:'3 x 15'},
+  thursday:{title:'Full Body — Gym',exercises:[
+    {name:'Barbell Squats',detail:'3 x 8'},{name:'Barbell Bench Press',detail:'3 x 8'},
+    {name:'Barbell Bent-Over Rows',detail:'3 x 8'},{name:'Overhead Press',detail:'3 x 8'},
+    {name:'Barbell Curls',detail:'2 x 10'},{name:'Face Pulls',detail:'3 x 15'},
   ]},
   friday:{title:'Calisthenics & Skill Work',exercises:PM_HOME.friday.exercises},
+};
+
+const PM_BW = {
+  monday:{title:'Push — Bodyweight',exercises:[
+    {name:'Push-Ups',detail:'4 x 15-20'},{name:'Decline Push-Ups',detail:'3 x 12'},
+    {name:'Diamond Push-Ups',detail:'3 x 10-12'},{name:'Pike Push-Ups',detail:'4 x 8-10'},
+    {name:'Dips (chairs/countertop)',detail:'3 x 10-12'},{name:'Archer Push-Ups',detail:'3 x 6-8 each'},
+    {name:'Tricep Bench Dips',detail:'3 x 15'},
+  ]},
+  tuesday:{title:'Pull — Bodyweight',exercises:[
+    {name:'Pull-Ups',detail:'4 x Max'},{name:'Chin-Ups',detail:'3 x Max'},
+    {name:'Inverted Rows',detail:'4 x 12'},{name:'Doorframe Rows',detail:'3 x 12'},
+    {name:'Towel Bicep Curls (iso)',detail:'3 x 15 sec hold'},{name:'Superman Hold',detail:'3 x 20 sec'},
+    {name:'Y-T-W Raises',detail:'2 x 10 each'},
+  ]},
+  wednesday:{title:'Legs & Core — Bodyweight',exercises:[
+    {name:'Bodyweight Squats',detail:'4 x 20'},{name:'Bulgarian Split Squats',detail:'3 x 12 each'},
+    {name:'Walking Lunges',detail:'3 x 12 each'},{name:'Single Leg Glute Bridge',detail:'3 x 12 each'},
+    {name:'Jump Squats',detail:'3 x 10'},{name:'Calf Raises (slow)',detail:'4 x 20'},
+    {name:'Wall Sit',detail:'3 x 45 sec'},{name:'Lying Leg Raises',detail:'3 x 15'},
+  ]},
+  thursday:{title:'Full Body — Bodyweight',exercises:[
+    {name:'Burpees',detail:'3 x 10'},{name:'Pull-Ups',detail:'3 x Max'},
+    {name:'Push-Ups',detail:'3 x 15'},{name:'Bodyweight Squats',detail:'3 x 20'},
+    {name:'Dips',detail:'3 x 10'},{name:'Plank',detail:'3 x 45 sec'},
+    {name:'Mountain Climbers',detail:'3 x 20'},
+  ]},
+  friday:{title:'Calisthenics & Skill Work',exercises:[
+    {name:'Handstand Progression',detail:'5 x max hold'},{name:'Pull-Ups (strict)',detail:'4 x Max'},
+    {name:'Dips',detail:'4 x 10'},{name:'L-Sit Hold',detail:'4 x max hold'},
+    {name:'Pistol Squat Progression',detail:'3 x 5 each'},
+  ]},
 };
 
 const COOLDOWN = [
@@ -810,16 +848,25 @@ function renderWorkouts() {
     </div>
   </div>`;
 
+  const amRoutine = dayData.amRoutine||'a';
+  const amData = AM_ROUTINES[amRoutine];
   const amChecked = dayData.am||[];
-  html += renderWorkoutCard('am','AM — Mobility & Posture', AM_WORKOUT, amChecked);
+  html += `<div style="display:flex;gap:8px;margin-bottom:14px;">
+    <button class="btn-sm" style="flex:1;${amRoutine==='a'?'background:#222;color:#fff;border-color:#444;':''}" onclick="setAMRoutine('a')">A — Walk</button>
+    <button class="btn-sm" style="flex:1;${amRoutine==='b'?'background:#222;color:#fff;border-color:#444;':''}" onclick="setAMRoutine('b')">B — No Walk</button>
+    <button class="btn-sm" style="flex:1;${amRoutine==='c'?'background:#222;color:#fff;border-color:#444;':''}" onclick="setAMRoutine('c')">C — Yoga</button>
+  </div>`;
+  html += renderWorkoutCard('am','AM — '+amData.title, amData.exercises, amChecked);
 
   if (isWeekday) {
     const location = dayData.location||'home';
-    const pm = location==='gym' ? PM_GYM[dayName] : PM_HOME[dayName];
+    const pmSrc = location==='gym' ? PM_GYM : location==='bw' ? PM_BW : PM_HOME;
+    const pm = pmSrc[dayName];
     if (pm) {
       html += `<div style="display:flex;gap:8px;margin-bottom:14px;">
         <button class="btn-sm" style="flex:1;${location==='home'?'background:#222;color:#fff;border-color:#444;':''}" onclick="setLocation('home')">Home</button>
         <button class="btn-sm" style="flex:1;${location==='gym'?'background:#222;color:#fff;border-color:#444;':''}" onclick="setLocation('gym')">Gym</button>
+        <button class="btn-sm" style="flex:1;${location==='bw'?'background:#222;color:#fff;border-color:#444;':''}" onclick="setLocation('bw')">Bodyweight</button>
       </div>`;
       html += renderWorkoutCard('pm','PM — '+pm.title, pm.exercises, dayData.pm||[]);
     }
@@ -866,6 +913,15 @@ function setWalk(val) {
   if (!data[dk]) data[dk]={};
   data[dk].walk = val;
   setData('workouts',data); renderWorkouts();
+}
+
+function setAMRoutine(routine) {
+  const dk = dateKey(), data = getData('workouts');
+  if (!data[dk]) data[dk] = {};
+  data[dk].amRoutine = routine;
+  data[dk].am = [];
+  setData('workouts', data);
+  renderWorkouts();
 }
 
 function setLocation(loc) {
@@ -1043,7 +1099,8 @@ function renderStats() {
   let totalWorkouts = 0;
   for (const dk of Object.keys(workouts)) {
     const wd = workouts[dk];
-    if (wd&&((wd.am&&wd.am.length>=AM_WORKOUT.length)||(wd.pm&&wd.pm.length>0))) totalWorkouts++;
+    const amLen = wd.amRoutine ? (AM_ROUTINES[wd.amRoutine]||AM_ROUTINES.a).exercises.length : AM_ROUTINES.a.exercises.length;
+    if (wd&&((wd.am&&wd.am.length>=amLen)||(wd.pm&&wd.pm.length>0))) totalWorkouts++;
   }
   document.getElementById('stat-workouts').textContent = totalWorkouts;
 
