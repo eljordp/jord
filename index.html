@@ -305,6 +305,23 @@
       <div class="progress-bar"><div class="progress-fill pro" id="pro-bar" style="width:0%"></div></div>
     </div>
 
+    <!-- Calorie Balance -->
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-header"><h2>Calorie Balance</h2></div>
+      <div class="card-body">
+        <div class="macro-row" style="margin-bottom:12px;">
+          <div class="macro-box"><div class="val" id="burn-base">1,800</div><div class="unit">base</div></div>
+          <div class="macro-box"><div class="val" id="burn-exercise">0</div><div class="unit">exercise</div></div>
+          <div class="macro-box"><div class="val" id="burn-total">1,800</div><div class="unit">total burn</div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid #1a1a1a;">
+          <div style="font-size:12px;color:var(--muted);">Eaten: <span id="burn-eaten" style="color:var(--text);font-weight:700;">0</span></div>
+          <div style="font-size:16px;font-weight:800;" id="burn-deficit">-1,800 cal</div>
+        </div>
+        <div style="font-size:10px;color:#444;margin-top:6px;" id="burn-breakdown"></div>
+      </div>
+    </div>
+
     <!-- Search -->
     <div class="search-wrap">
       <span class="search-icon">&#8981;</span>
@@ -933,6 +950,22 @@ function setLocation(loc) {
   renderWorkouts();
 }
 
+// ===== CALORIE BURN =====
+const BMR = 1800;
+function calcExerciseBurn(dk) {
+  const data = getData('workouts');
+  const d = data[dk] || {};
+  let walk=0, am=0, pm=0, cd=0;
+  walk = (d.walk||0) * 4;
+  const routine = d.amRoutine||'a';
+  const amCal = routine==='b'?11:routine==='c'?5:6;
+  am = (d.am||[]).length * amCal;
+  const loc = d.location||'home';
+  pm = (d.pm||[]).length * (loc==='gym'?55:50);
+  cd = (d.cooldown||[]).length * 3;
+  return { walk, am, pm, cd, exercise: walk+am+pm+cd, total: BMR+walk+am+pm+cd };
+}
+
 // ===== RENDER NUTRITION =====
 function renderNutrition() {
   const dk = dateKey();
@@ -961,6 +994,23 @@ function renderNutrition() {
   document.getElementById('pro-bar').style.width = proPct+'%';
   document.getElementById('cal-prog-label').textContent = totalCal.toLocaleString()+' / 2,000';
   document.getElementById('pro-prog-label').textContent = totalPro+'g / 170g';
+
+  // Burn
+  const burn = calcExerciseBurn(dk);
+  document.getElementById('burn-base').textContent = BMR.toLocaleString();
+  document.getElementById('burn-exercise').textContent = burn.exercise;
+  document.getElementById('burn-total').textContent = burn.total.toLocaleString();
+  document.getElementById('burn-eaten').textContent = totalCal.toLocaleString();
+  const deficit = burn.total - totalCal;
+  const defEl = document.getElementById('burn-deficit');
+  defEl.textContent = (deficit>0?'-':'+') + Math.abs(deficit).toLocaleString() + ' cal';
+  defEl.style.color = deficit>0 ? 'var(--green)' : 'var(--red)';
+  const parts = [];
+  if (burn.walk>0) parts.push('Walk '+burn.walk);
+  if (burn.am>0) parts.push('AM '+burn.am);
+  if (burn.pm>0) parts.push('PM '+burn.pm);
+  if (burn.cd>0) parts.push('Cooldown '+burn.cd);
+  document.getElementById('burn-breakdown').textContent = parts.length ? parts.join(' · ') : 'No exercise logged yet';
 
   // Log count
   document.getElementById('log-count').textContent = dayFoods.length;
